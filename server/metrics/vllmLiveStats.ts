@@ -8,6 +8,7 @@
  * prefix cache as counters `vllm:prefix_cache_hits` / `vllm:prefix_cache_queries` (rate = hits/queries).
  */
 import type { VllmLiveStats } from "../../types/index.js";
+import { parseTimeToFirstTokenP95Seconds } from "./vllmHistogram.js";
 
 function lineScalarValue(line: string): number | null {
   const t = line.trim();
@@ -104,21 +105,27 @@ export function parseVllmLiveStatsFromPrometheus(text: string): VllmLiveStats {
   const promptTot = pickMetric(text, "prompt_tokens_total");
   const genTot = pickMetric(text, "generation_tokens_total");
 
+  // CPU-only gauge is read only into cpuPrefixCacheHitRateFrac (not duplicated here).
   const prefixHit =
     prefixHitRateFromV1Counters(text) ??
     pickMetricAny(text, [
       "gpu_prefix_cache_hit_rate",
-      "cpu_prefix_cache_hit_rate",
       "prefix_cache_hit_rate",
       "vllm_gpu_prefix_cache_hit_rate",
     ]);
+  const cpuPrefixGauge = pickMetricAny(text, ["cpu_prefix_cache_hit_rate"]);
+  const swapped = pickMetric(text, "num_requests_swapped");
+  const ttftP95 = parseTimeToFirstTokenP95Seconds(text);
 
   return {
     gpuCacheUsageFrac: gpuKv,
     cpuCacheUsageFrac: cpuKv,
     gpuPrefixCacheHitRateFrac: prefixHit,
+    cpuPrefixCacheHitRateFrac: cpuPrefixGauge,
+    timeToFirstTokenP95Seconds: ttftP95,
     numRequestsRunning: run,
     numRequestsWaiting: wait,
+    numRequestsSwapped: swapped,
     promptTokensTotal: promptTot,
     generationTokensTotal: genTot,
   };
