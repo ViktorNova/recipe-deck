@@ -1,0 +1,43 @@
+# Tiny Qwen recipe for Recipe Deck screen recordings (fast load vs multi-10B models).
+#
+# Copy this file to $SPARK_VLLM_ROOT/recipes/recipe-deck-demo-qwen-0.5b.yaml
+# (stem in the UI: recipe-deck-demo-qwen-0.5b). Ensure VLLM_PORT in Recipe Deck .env matches defaults.port (8000).
+#
+# Verify on your host: container name and image must match your spark-vllm-docker / vLLM image (see other recipes).
+# No custom --chat-template: vLLM loads the template from the model tokenizer (avoids missing mods/ paths inside the container).
+# If you need the sidekick mod, copy docs/examples/sidekick-qwen-recipe.yaml pattern and ensure mods/ is visible in the container cwd.
+#
+# First run may download weights from Hugging Face; set HF_TOKEN in $SPARK_VLLM_ROOT/.env if the model is gated.
+
+description: Recipe Deck demo — Qwen2.5 0.5B Instruct (quick boot)
+model: Qwen/Qwen2.5-0.5B-Instruct
+container: vllm-node-tf5
+build_args:
+  - "--tf5"
+defaults:
+  port: 8000
+  host: 0.0.0.0
+  tensor_parallel: 1
+  # 0.5B fits in a sliver of VRAM; higher utilization avoids under-reserving KV for no benefit.
+  gpu_memory_utilization: 0.55
+  # Shorter context = smaller KV footprint; demo chat is short — keeps prefill/cache lean.
+  max_model_len: 2048
+  max_num_seqs: 8
+env:
+  HF_TOKEN: ${HF_TOKEN}
+  VLLM_MARLIN_USE_ATOMIC_ADD: "1"
+  OMP_NUM_THREADS: "8"
+command: |
+  vllm serve Qwen/Qwen2.5-0.5B-Instruct \
+      --served-model-name recipe-deck-demo \
+      --tensor-parallel-size {tensor_parallel} \
+      --gpu-memory-utilization {gpu_memory_utilization} \
+      --max-model-len {max_model_len} \
+      --max-num-seqs {max_num_seqs} \
+      --dtype bfloat16 \
+      --host {host} \
+      --port {port}
+recipe_version: "1"
+name: Qwen/Qwen2.5-0.5B-Instruct
+cluster_only: false
+solo_only: false

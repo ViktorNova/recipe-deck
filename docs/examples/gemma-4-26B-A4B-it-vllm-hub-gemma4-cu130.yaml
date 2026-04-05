@@ -1,0 +1,39 @@
+# Gemma 4 26B A4B — use with Recipe Deck + spark-vllm-docker `run-recipe.py --solo`.
+#
+# WHY THIS FILE EXISTS:
+# - Recipes that set `container: nvcr.io/nvidia/vllm:26.02-py3` run vLLM ~0.15.x, which does NOT
+#   accept `--tool-call-parser gemma4` (startup fails with KeyError listing allowed parsers).
+# - Recipes that set `container: vllm-node-gemma4` depend on your local Dockerfile build.
+# - `vllm/vllm-openai:gemma4-cu130` (Docker Hub) matches NVIDIA Spark guidance and the manual
+#   `docker run ... vllm/vllm-openai:gemma4-cu130` flow; it includes Gemma4 tool/reasoning parsers.
+#
+# Copy to $SPARK_VLLM_ROOT/recipes/ on your inference host, then run from Recipe Deck (stop any manual :8000 container first).
+
+description: Gemma 4 26B A4B IT — Docker Hub gemma4-cu130 (same stack as manual docker run)
+model: google/gemma-4-26B-A4B-it
+container: vllm/vllm-openai:gemma4-cu130
+defaults:
+  port: 8000
+  host: 0.0.0.0
+  tensor_parallel: 1
+  gpu_memory_utilization: 0.9
+  max_model_len: 131072
+  max_num_seqs: 32
+env:
+  HF_TOKEN: ${HF_TOKEN}
+command: |
+  vllm serve google/gemma-4-26B-A4B-it \
+      --enable-auto-tool-choice \
+      --tool-call-parser gemma4 \
+      --reasoning-parser gemma4 \
+      --kv-cache-dtype fp8 \
+      --max-model-len {max_model_len} \
+      --gpu-memory-utilization {gpu_memory_utilization} \
+      --tensor-parallel-size {tensor_parallel} \
+      --host {host} \
+      --port {port} \
+      --trust-remote-code
+recipe_version: "1"
+name: google/gemma-4-26B-A4B-it-hub-gemma4-cu130
+cluster_only: false
+solo_only: false

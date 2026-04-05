@@ -1,0 +1,14 @@
+node_modules/
+dist/
+client/dist/
+.env
+operator.local.env
+*.log
+.DS_Store
+
+# Playwright demo harness (entire tree; keep locally, not committed)
+demo/
+
+# Optional local-only demo notes (not in clone)
+docs/DEMO-RECORDING.md
+docs/DEMO-SCRIPT.md

@@ -1,0 +1,43 @@
+# Sidekick recipe: second vLLM on another port with low VRAM.
+#
+# IMPORTANT — container name:
+#   Use `container: vllm-sidekick` (or any name != the main recipe), NOT `vllm-node-tf5`.
+#   Same image name as the primary runner makes spark exec into the existing `vllm_node` container
+#   instead of starting a second server. Pair with Recipe Deck env:
+#     DOCKER_IMAGE_ALIASES=vllm-sidekick=vllm-node-tf5
+#
+# Copy to $SPARK_VLLM_ROOT/recipes/ (e.g. sidekick-qwen.yaml). Defaults.port should match
+# VLLM_PORT_SECONDARY (8001).
+
+description: vLLM serving Qwen2.5-0.5B (Chat Sidekick)
+model: Qwen/Qwen2.5-0.5B-Instruct
+container: vllm-sidekick
+build_args:
+  - "--tf5"
+defaults:
+  port: 8001
+  host: 0.0.0.0
+  tensor_parallel: 1
+  # 0.01 ≈ 1% of total VRAM reservation; tune vs free VRAM after the main model loads.
+  gpu_memory_utilization: 0.01
+  max_model_len: 2048
+  max_num_seqs: 2
+  chat_template_path: "mods/fix-qwen3.5-chat-template"
+env:
+  HF_TOKEN: ${HF_TOKEN}
+  VLLM_MARLIN_USE_ATOMIC_ADD: "1"
+  OMP_NUM_THREADS: "4"
+command: |
+  vllm serve Qwen/Qwen2.5-0.5B-Instruct \
+      --served-model-name sidekick-chat \
+      --tensor-parallel-size {tensor_parallel} \
+      --gpu-memory-utilization {gpu_memory_utilization} \
+      --max-model-len {max_model_len} \
+      --dtype bfloat16 \
+      --chat-template {chat_template_path} \
+      --host {host} \
+      --port {port}
+recipe_version: "1"
+name: Qwen/Qwen2.5-0.5B-Instruct
+cluster_only: false
+solo_only: false

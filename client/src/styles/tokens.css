@@ -1,0 +1,126 @@
+:root {
+  color-scheme: light;
+
+  --font-ui: ui-sans-serif, system-ui, "Inter", "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+  /* Tighter terminal-style stack for logs + raw YAML (Cascadia common on Win/mac dev installs). */
+  --font-terminal: ui-monospace, "Cascadia Mono", "Cascadia Code", "SF Mono", "SFMono-Regular",
+    Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+  --color-bg: #f8fafc;
+  --color-surface: #ffffff;
+  --color-border: #e2e8f0;
+  --color-text: #0f172a;
+  --color-muted: #64748b;
+  --color-accent: #2563eb;
+  --color-danger: #b91c1c;
+
+  --color-on-accent: #ffffff;
+
+  --color-idle: #f1f5f9;
+  --color-boot: #fef9c3;
+  --color-healthy: #dcfce7;
+  --color-error: #fee2e2;
+
+  --color-badge-boot-fg: #713f12;
+  --color-badge-ok-fg: #14532d;
+  --color-badge-err-fg: #7f1d1d;
+
+  --color-input-bg: #ffffff;
+
+  --color-banner-warn-bg: #fef3c7;
+  --color-banner-warn-fg: #78350f;
+  --color-banner-err-bg: #fee2e2;
+  --color-banner-err-fg: #991b1b;
+
+  --color-danger-ghost-border: #fecaca;
+  --color-danger-ghost-bg: #ffffff;
+
+  --shadow-modal: 0 10px 40px rgba(15, 23, 42, 0.12);
+  --color-modal-backdrop: rgba(15, 23, 42, 0.45);
+  /* About + Settings modals: ~30% stronger scrim + frost than generic dialogs (readability) */
+  --glass-modal-backdrop: rgba(15, 23, 42, 0.58);
+  --glass-modal-bg: rgba(255, 255, 255, 0.18);
+  --glass-modal-blur: blur(3px);
+
+  /* ~20% frost: minimal blur + low tint so the canvas reads through (not heavy glass) */
+  --glass-panel-bg: rgba(255, 255, 255, 0.08);
+  /* Top bar: lighter frost so aurora + content stay readable */
+  --glass-header-bg: rgba(255, 255, 255, 0.52);
+  --glass-blur: blur(2px);
+  /** Panels + glass modals — shared shadow (DRY with EditorPanel, RunningModel, dialogs). */
+  --glass-panel-shadow: 0 4px 24px rgba(15, 23, 42, 0.04);
+  /* Inset <select>, text+list, file combobox — same frosted language as panels */
+  --control-glass-bg: color-mix(in srgb, var(--color-surface) 52%, transparent);
+  --control-glass-blur: 10px;
+  /* Native <select> + combobox fields — one chevron (theme-aware stroke) */
+  --field-dropdown-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  /* Softer merge for vertical “curtain” pillars (photo-like aurora) */
+  --header-aurora-blur: 32px;
+
+  --radius-md: 8px;
+  --radius-sm: 4px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+
+  --log-bg: #0f172a;
+  --log-fg: #e2e8f0;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --color-bg: #0f172a;
+  --color-surface: #1e293b;
+  --color-border: #334155;
+  --color-text: #f1f5f9;
+  --color-muted: #94a3b8;
+  --color-accent: #60a5fa;
+  --color-danger: #f87171;
+
+  --color-on-accent: #ffffff;
+
+  --color-idle: #1e293b;
+  --color-boot: #422006;
+  --color-healthy: #052e16;
+  --color-error: #450a0a;
+
+  --color-badge-boot-fg: #fcd34d;
+  --color-badge-ok-fg: #86efac;
+  --color-badge-err-fg: #fca5a5;
+
+  --color-input-bg: #0f172a;
+
+  --color-banner-warn-bg: #422006;
+  --color-banner-warn-fg: #fcd34d;
+  --color-banner-err-bg: #450a0a;
+  --color-banner-err-fg: #fca5a5;
+
+  --color-danger-ghost-border: #7f1d1d;
+  --color-danger-ghost-bg: #1e293b;
+
+  --shadow-modal: 0 10px 40px rgba(0, 0, 0, 0.45);
+  --color-modal-backdrop: rgba(0, 0, 0, 0.55);
+  --glass-modal-backdrop: rgba(0, 0, 0, 0.68);
+  --glass-modal-bg: rgba(15, 23, 42, 0.28);
+  --glass-modal-blur: blur(3px);
+
+  --glass-panel-bg: rgba(15, 23, 42, 0.12);
+  --control-glass-bg: color-mix(in srgb, var(--color-surface) 42%, transparent);
+  --field-dropdown-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  /* More transparent frost so aurora reads as colored light, not flat navy */
+  --glass-header-bg: rgba(15, 23, 42, 0.38);
+
+  --log-bg: #020617;
+  --log-fg: #cbd5e1;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+
+  /* Log panel: cool blue-grey at same 40% mix as dark (RunningModelPanel .log) */
+  --log-bg: #d8e3ec;
+  --log-fg: #0f172a;
+}

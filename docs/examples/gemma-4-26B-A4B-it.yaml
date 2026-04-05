@@ -1,0 +1,34 @@
+# Gemma 4 26B A4B (MoE, instruction-tuned) — text + vision.
+# Copy to $SPARK_VLLM_ROOT/recipes/ and tune tensor_parallel / gpu_memory_utilization / max_model_len
+# for your GPUs. Requires a Gemma 4–capable vLLM image (e.g. vllm-node-gemma4 with --tf5 build).
+# For Docker Hub `vllm/vllm-openai:gemma4-cu130` (no local build), see gemma-4-26B-A4B-it-vllm-hub-gemma4-cu130.yaml.
+#
+# Model card: https://huggingface.co/google/gemma-4-26B-A4B-it
+
+description: Gemma 4 26B A4B IT (MoE) — multimodal
+model: google/gemma-4-26B-A4B-it
+container: vllm-node-gemma4
+build_args:
+  - "--tf5"
+defaults:
+  port: 8000
+  host: 0.0.0.0
+  tensor_parallel: 1
+  gpu_memory_utilization: 0.9
+  max_model_len: 65536
+  max_num_seqs: 8
+env:
+  HF_TOKEN: ${HF_TOKEN}
+command: |
+  vllm serve google/gemma-4-26B-A4B-it \
+      --tensor-parallel-size {tensor_parallel} \
+      --gpu-memory-utilization {gpu_memory_utilization} \
+      --max-model-len {max_model_len} \
+      --dtype bfloat16 \
+      --enforce-eager \
+      --host {host} \
+      --port {port}
+recipe_version: "1"
+name: google/gemma-4-26B-A4B-it
+cluster_only: false
+solo_only: false

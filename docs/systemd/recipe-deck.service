@@ -1,0 +1,20 @@
+[Unit]
+Description=Recipe Deck (vLLM recipe control UI)
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/repos/recipe-deck
+EnvironmentFile=-%h/repos/recipe-deck/.env
+# Use the absolute path from `command -v node` if Node is not at /usr/bin (nvm, fnm, mise, etc.).
+# User units do not load login shells, so PATH-based resolution does not apply unless you set Environment=PATH=...
+ExecStart=/usr/bin/node dist/server/main.js
+Restart=on-failure
+RestartSec=3
+
+# Optional: yield CPU under load (uncomment on busy hosts)
+# Nice=10
+# CPUQuota=50%
+
+[Install]
+WantedBy=default.target

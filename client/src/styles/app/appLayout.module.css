@@ -1,0 +1,108 @@
+.root {
+  position: relative;
+  z-index: 1;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.banner {
+  position: relative;
+  z-index: 2;
+  background: var(--color-banner-warn-bg);
+  color: var(--color-banner-warn-fg);
+  padding: var(--space-2) var(--space-4);
+  font-size: 0.85rem;
+}
+
+.mainScroll {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  /* Space for .topFixed (fixed); --app-header-offset set in App.tsx from measured height */
+  padding-top: var(--app-header-offset, 5.5rem);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Stacked on narrow viewports; two columns on desktop only. Fills space below header. */
+.workArea {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4) var(--space-4);
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.runColumn,
+.editorColumn {
+  min-width: 0;
+  min-height: 0;
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.runColumn > * {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.editorStack {
+  flex: 1 1 auto;
+  min-height: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+@media (max-width: 960px) {
+  .mainScroll {
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .workArea {
+    flex: 0 0 auto;
+    min-height: 0;
+  }
+
+  .runColumn,
+  .editorColumn {
+    flex: 0 0 auto;
+    min-height: 0;
+  }
+
+  .runColumn > * {
+    flex: 0 0 auto;
+    min-height: 0;
+  }
+
+  .editorStack {
+    flex: 0 1 auto;
+    min-height: min(70vh, 36rem);
+  }
+}
+@media (min-width: 961px) {
+  .workArea {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+    align-items: stretch;
+    gap: var(--space-3);
+    flex: 1 1 auto;
+  }
+
+  .runColumn,
+  .editorColumn {
+    min-height: 0;
+    flex: unset;
+    display: flex;
+    flex-direction: column;
+  }
+}

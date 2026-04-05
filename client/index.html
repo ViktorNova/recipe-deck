@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f8fafc" />
+    <!-- Inline SVG so the tab icon works even if /favicon.ico was served SPA HTML; file also in /public. -->
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20role%3D%22img%22%20aria-label%3D%22Recipe%20Deck%22%3E%0A%20%20%3Cdefs%3E%0A%20%20%20%20%3ClinearGradient%20id%3D%22deck%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%233b82f6%22%2F%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%231d4ed8%22%2F%3E%0A%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%3C%2Fdefs%3E%0A%20%20%0A%20%20%3Crect%20x%3D%225%22%20y%3D%2212%22%20width%3D%2220%22%20height%3D%2214%22%20rx%3D%223%22%20fill%3D%22%2394a3b8%22%20opacity%3D%220.4%22%2F%3E%0A%20%20%0A%20%20%3Crect%20x%3D%226%22%20y%3D%226%22%20width%3D%2220%22%20height%3D%2214%22%20rx%3D%223%22%20fill%3D%22url(%23deck)%22%2F%3E%0A%20%20%0A%20%20%3Crect%20x%3D%2210%22%20y%3D%2210%22%20width%3D%2212%22%20height%3D%222.2%22%20rx%3D%221%22%20fill%3D%22%23ffffff%22%20opacity%3D%220.95%22%2F%3E%0A%20%20%3Crect%20x%3D%2210%22%20y%3D%2214%22%20width%3D%228%22%20height%3D%222.2%22%20rx%3D%221%22%20fill%3D%22%23ffffff%22%20opacity%3D%220.88%22%2F%3E%0A%20%20%3Crect%20x%3D%2210%22%20y%3D%2218%22%20width%3D%2210%22%20height%3D%222.2%22%20rx%3D%221%22%20fill%3D%22%23ffffff%22%20opacity%3D%220.8%22%2F%3E%0A%3C%2Fsvg%3E"
+    />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" sizes="any" />
+    <title>Recipe Deck</title>
+    <script>
+      (function () {
+        try {
+          var k = "recipe-deck-theme";
+          var t = localStorage.getItem(k);
+          if (t === "dark" || t === "light") {
+            document.documentElement.setAttribute("data-theme", t);
+            return;
+          }
+          if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+            document.documentElement.setAttribute("data-theme", "dark");
+          }
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,75 @@
+.base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  margin: 0;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--glass-panel-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  color: var(--color-text);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    border-color 0.12s ease,
+    background 0.12s ease,
+    color 0.12s ease,
+    opacity 0.12s ease;
+}
+
+.base:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--color-accent) 55%, var(--color-border));
+  background: color-mix(in srgb, var(--color-accent) 14%, var(--glass-panel-bg));
+}
+
+.base:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--color-accent) 65%, transparent);
+  outline-offset: 1px;
+}
+
+.base:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+.muted {
+  composes: base;
+}
+
+.accent {
+  composes: base;
+  border-color: color-mix(in srgb, var(--color-accent) 45%, var(--color-border));
+  background: color-mix(in srgb, var(--color-accent) 18%, var(--glass-panel-bg));
+  color: var(--color-accent);
+}
+
+.accent:hover:not(:disabled) {
+  border-color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 28%, var(--glass-panel-bg));
+}
+
+.danger {
+  composes: base;
+  border-color: var(--color-danger-ghost-border);
+  background: color-mix(in srgb, var(--color-danger) 10%, var(--glass-panel-bg));
+  color: var(--color-danger);
+}
+
+.danger:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--color-danger) 45%, var(--color-border));
+  background: color-mix(in srgb, var(--color-danger) 16%, var(--glass-panel-bg));
+}
+
+.busy {
+  animation: pulse 0.9s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.65;
+  }
+}
