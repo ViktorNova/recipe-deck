@@ -166,11 +166,9 @@ See **`.env.example`** for **`SWITCHER_PORT`**, **`LOG_DIR`**, log rotation, **`
 | `npm run build:server` | `tsc` for `server/` → `dist/server` |
 | `npm start` / `npm run start:prod` | `node dist/server/main.js` |
 | `npm run typecheck` | Typecheck server and client without emit |
-| `npm run lint` | [ESLint](https://eslint.org/) on tracked TS (excludes **`demo/`**; zero warnings) |
+| `npm run lint` | [ESLint](https://eslint.org/) on tracked TS (zero warnings) |
 | `npm run lint:fix` | ESLint with `--fix` |
 | `npm run format` | [Prettier](https://prettier.io/) on TypeScript/CSS sources |
-| `npm run demo:test` | Playwright capture (requires a local **`demo/`** tree; **gitignored**, not in clone) |
-| `npm run demo:mov` | Encode the latest WebM to **`demo/recipe-deck-demo/Recipe-Deck-Demo.mov`** (same **`demo/`** requirement) |
 
 ---
 
@@ -199,7 +197,7 @@ Two common flows: push the repo from **another machine over SSH** (scripted rsyn
 
 ### Via SSH
 
-Use this when you run commands from a **laptop or workstation** that can reach the target over SSH. The repo includes **`scripts/deploy-gb10.sh`** (GB10-class inference hosts — DGX Spark, Asus GX10, Dell, etc.; **`deploy-gx10.sh`** is a legacy alias): it **rsync**s the tree to the host (excluding `node_modules`, `.git`, **`.env`**, and **`operator.local.env`**), then **SSH**s in to run **`npm ci`**, **`npm run build`**, and **`systemctl --user restart recipe-deck.service`**.
+Use this when you run commands from a **laptop or workstation** that can reach the target over SSH. The repo includes **`scripts/deploy-gb10.sh`** (GB10-class inference hosts — DGX Spark, Asus GX10, Dell, etc.; **`deploy-gx10.sh`** is a legacy alias): it **rsync**s the tree to the host (excluding `node_modules`, `.git`, **`.env`**, **`operator.local.env`**, and remote-local/runtime folders like **`recipes/`**), then **SSH**s in to run **`npm ci`**, **`npm run build`**, and **`systemctl --user restart recipe-deck.service`**.
 
 **Operator-specific SSH and paths** — do **not** commit real SSH users or hostnames. Copy **`operator.local.env.example`** to **`operator.local.env`** (gitignored) and set:
 
@@ -212,7 +210,7 @@ Example one-off deploy without a local env file:
 DEPLOY_HOST=user@your-inference-host.example ./scripts/deploy-gb10.sh
 ```
 
-**Rsync warning:** **`deploy-gb10.sh`** excludes **`.env`** so a **`--delete`** sync does not wipe production secrets. **Never** run raw **`rsync -avz --delete`** against the remote app tree without the same excludes unless you intend to remove **`.env`**.
+**Rsync warning:** **`deploy-gb10.sh`** excludes **`.env`** and **`recipes/`** so a **`--delete`** sync does not wipe secrets or remote-local content. **Never** run raw **`rsync -avz --delete`** against the remote app tree without the same excludes unless you intend to remove that data.
 
 Details: **[docs/OPERATOR-LOCAL.md](docs/OPERATOR-LOCAL.md)**.
 
@@ -292,7 +290,7 @@ The example unit may reference **`EnvironmentFile=%h/.../recipe-deck/.env`**. Us
 
 | Symptom | Things to check |
 |---------|-------------------|
-| Service fails after deploy | Remote **`.env`** missing or wrong path: **`EnvironmentFile=`** in systemd; confirm **`deploy-gb10.sh`** did not delete `.env` (script excludes it). |
+| Service fails after deploy | Remote **`.env`** missing or wrong path: **`EnvironmentFile=`** in systemd; confirm **`deploy-gb10.sh`** excludes **`.env`** and **`recipes/`** during rsync. |
 | Runner never **HEALTHY** | **`READY_REGEX`** matches your vLLM log line; increase timeouts in settings if the model is slow to load. |
 | No Docker image/name in UI | Process user cannot run **`docker ps`**; or nothing publishes the expected port. |
 | Wrong recipes list | **`SPARK_VLLM_ROOT`** and **`recipes/`** path; **`chokidar`** refresh on file changes. |

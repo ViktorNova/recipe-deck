@@ -9,7 +9,7 @@ const DRIFT_SPEED = 0.00012;
 const SPEED_MUL_MIN = 0.32;
 /** ~tok/s at which multiplier approaches cap (soft ceiling). */
 const TOK_REF = 140;
-const SPEED_MUL_MAX = 3.6;
+const SPEED_MUL_MAX = 2.4;
 /** Smooth tok→speed so polling jumps do not twitch the field. */
 const SPEED_SMOOTH = 0.14;
 /**
@@ -18,7 +18,7 @@ const SPEED_SMOOTH = 0.14;
  */
 const TOK_COMPRESS_ABOVE = 22;
 /** Multiply only the portion of u above u(TOK_COMPRESS_ABOVE) by this (lower = calmer at high tok/s). */
-const HIGH_ACTIVITY_U_DAMP = 0.5;
+const HIGH_ACTIVITY_U_DAMP = 0.34;
 
 /** Map tok/s to drift speed multiplier (higher load → faster motion). */
 function activitySpeedMultiplier(tok: number | null | undefined): number {

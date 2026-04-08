@@ -25,10 +25,12 @@ if [[ -z "${REMOTE}" ]]; then
 fi
 
 echo "rsync -> ${REMOTE}:${REL}/"
-# Exclude .env so --delete does not remove the remote EnvironmentFile (systemd).
+# Exclude remote-local/runtime data so --delete does not wipe operator state.
 rsync -avz --delete \
   --exclude node_modules \
   --exclude .git \
+  --exclude demo \
+  --exclude recipes \
   --exclude .env \
   --exclude operator.local.env \
   ./ "${REMOTE}:${REL}/"
