@@ -28,10 +28,7 @@ import {
 } from "../types/index.js";
 import { readHfTokenFromFile } from "./envMerge.js";
 import { computeModelCacheProgress } from "./modelCacheProgress.js";
-import {
-  readCurrentRecipeState,
-  type CurrentRecipeState,
-} from "./currentRecipe.js";
+import { readCurrentRecipeState } from "./currentRecipe.js";
 
 /** Single object for GET /api/state and WebSocket `state` messages (keep in sync). */
 export interface DeckFullStatePayload {

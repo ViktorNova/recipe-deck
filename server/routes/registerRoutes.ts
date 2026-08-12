@@ -28,9 +28,7 @@ import { ensureDockerImageAliases } from "../dockerImageAliases.js";
 import {
   readCurrentRecipeState,
   writeCurrentRecipeState,
-  clearCurrentRecipeState,
   updateCurrentRecipeAutoStart,
-  type CurrentRecipeState,
 } from "../currentRecipe.js";
 import {
   isValidDockerContainerId,

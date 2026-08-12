@@ -34,6 +34,8 @@ export function ServerSettingsModal(props: ServerSettingsModalProps): ReactEleme
     onSaveHf,
     hfTokenLoading,
     onRefreshRecipes,
+    autoStartState,
+    onAutoStartChange,
   } = props;
 
   useEffect(() => {
@@ -90,6 +92,8 @@ export function ServerSettingsModal(props: ServerSettingsModalProps): ReactEleme
             onSaveHf={onSaveHf}
             hfTokenLoading={hfTokenLoading}
             onRefreshRecipes={onRefreshRecipes}
+            autoStartState={autoStartState}
+            onAutoStartChange={onAutoStartChange}
           />
         </div>
       </div>
