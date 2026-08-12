@@ -8,7 +8,13 @@ import { fileURLToPath } from "node:url";
  */
 function repoRoot(): string {
   const moduleDir = path.dirname(fileURLToPath(import.meta.url));
-  return path.basename(moduleDir) === "dist"
+  /**
+   * In dev: `server/currentRecipe.ts` → go up one → repo root
+   * In prod: `dist/server/currentRecipe.js` → go up two → repo root
+   * Heuristic: if the parent directory is `dist`, we're inside dist/.
+   */
+  const parentDir = path.basename(path.dirname(moduleDir));
+  return parentDir === "dist"
     ? path.join(moduleDir, "..", "..")
     : path.join(moduleDir, "..");
 }
