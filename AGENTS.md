@@ -6,7 +6,7 @@ Recipe Deck is an **operator web UI** for **NVIDIA DGX Spark**-class systems (GB
 ## Stack
 - **Frontend**: React 19 + Vite 6 + CSS Modules (no inline styles for layout/theme)
 - **Backend**: Node.js (Express + ws) serving REST API, WebSocket logs, and SPA
-- **Config**: `.env` at repo root + `$SPARK_VLLM_ROOT/.env` for HF_TOKEN and spark-specific vars
+- **Config**: `.env` at repo root + `$SPARK_VLLM_ROOT/.env` for HF_TOKEN and spark-specific vars. State file: `.current-recipe` at repo root (auto-start config).
 - **Types**: Shared under `types/` (no inline exported shapes)
 - **Lints**: ESLint 9.x, Prettier, TypeScript
 
@@ -44,14 +44,16 @@ scripts/        -- deploy-gb10.sh, setup.sh
 
 4. **Routes** (`server/routes/registerRoutes.ts`):
    - `GET /api/state` — full state snapshot
-   - `POST /api/run` — start recipe (with solo, buffer yaml, overrides)
-   - `POST /api/stop`, `POST /api/force-kill`
+   - `POST /api/run` — start recipe (with solo, buffer yaml, overrides, auto-start flag)
+   - `POST /api/stop`, `POST /api/force-kill` — also clears `.current-recipe`
    - `GET/POST/DELETE /api/recipe` — CRUD on recipe YAML files
    - `POST /api/recipe/broken` — set `recipe_deck.broken` metadata
    - `GET/POST /api/settings/hf-token` — read/write HF_TOKEN in env file
    - `GET/POST /api/settings/app` — app settings (ports, regex, intervals)
    - `POST /api/service/restart` — systemd restart (production)
    - `GET/POST /api/docker/*` — container management
+   - `GET/POST /api/settings/auto-start` — read/write `.current-recipe` state
+   - `POST /api/settings/auto-start/toggle` — toggle auto-start flag only
 
 5. **WebSocket** (`server/wsHub.ts`):
    - On connect: sends full state snapshot + log snapshot
@@ -66,6 +68,12 @@ scripts/        -- deploy-gb10.sh, setup.sh
    - FloatingDotsBackground: canvas-based animated dots following cursor
    - Simple UI mode: disables dots and header aurora
 
+7. **Auto-start** (`server/currentRecipe.ts` + `DeckService.tryAutoStart()`):
+   - On `DeckService.init()`: reads `.current-recipe`, if `AUTOSTART_CURRENT_RECIPE=true` and recipe file exists → auto-launches it
+   - `.current-recipe` at repo root (gitignored) — never touches `.env` or spark-vllm-docker dir
+   - Written by `/api/run` (with auto-start flag from client checkbox), cleared by `/api/stop` and `/api/force-kill`
+   - New routes: `GET/POST /api/settings/auto-start`, `POST /api/settings/auto-start/toggle`
+
 ## Key concepts
 
 - **Single runner**: Only `slot "a"` exists. Legacy `slot: "b"` is rejected.
@@ -74,6 +82,7 @@ scripts/        -- deploy-gb10.sh, setup.sh
 - **Docker image aliases**: `docker tag SOURCE TARGET` before each run for sidekick parallel pattern.
 - **Run counts**: Persisted in `LOG_DIR/recipe-run-counts.json`; recipes sorted by MRU.
 - **Health probe**: Regex match on log lines (default: `Uvicorn running|Application startup complete`). Timeout: 10 min.
+- **Auto-start**: `.current-recipe` file at app root stores which recipe to launch on boot. Controlled by checkbox in RunningModelPanel (checked by default) and Settings modal. Cleared on stop/kill.
 
 ## Config file hierarchy
 
@@ -81,6 +90,7 @@ scripts/        -- deploy-gb10.sh, setup.sh
 |------|---------|
 | `.env` (repo root) | App runtime: ports, SPARK_VLLM_ROOT, LOG_DIR, etc. |
 | `$SPARK_VLLM_ROOT/.env` | spark-vllm-docker: HF_TOKEN, port knobs, Python env |
+| `.current-recipe` (repo root) | Auto-start state: `CURRENT_RECIPE=<stem>` + `AUTOSTART_CURRENT_RECIPE=true|false` |
 | `operator.local.env` (gitignored) | Deploy-only: SSH credentials, remote path |
 
 ## Making changes
